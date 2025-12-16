@@ -10,6 +10,8 @@ export type ActorType =
   | 'BM'  // Branch Manager
   | 'SA'; // Super Admin
 
+export type ViewType = 'ALL' | 'EMP' | 'CAN' | 'SP' | 'AD';
+
 export interface WorkflowAction {
   actor: ActorType;
   description: string[];

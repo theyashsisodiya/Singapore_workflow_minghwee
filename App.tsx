@@ -1,25 +1,32 @@
 import React, { useState } from 'react';
-import { WORKFLOW_PHASES, KPIS, QA_ITEMS } from './constants';
-import { PhaseCard } from './components/PhaseCard';
-import { Activity, ShieldCheck, PieChart, Menu, X, Filter } from 'lucide-react';
+import { KPIS, QA_ITEMS } from './data/shared';
+import { EmployerPage } from './pages/EmployerPage';
+import { CandidatePage } from './pages/CandidatePage';
+import { SalespersonPage } from './pages/SalespersonPage';
+import { AdminPage } from './pages/AdminPage';
+import { Activity, ShieldCheck, PieChart, Menu, X, Users, User, Briefcase, FileCheck } from 'lucide-react';
 import { ActorBadge } from './components/ActorBadge';
+import { ViewType } from './types';
+
+const VIEWS: { id: ViewType; label: string; icon: React.FC<any> }[] = [
+  { id: 'EMP', label: 'Employer', icon: User },
+  { id: 'CAN', label: 'Candidate', icon: Users },
+  { id: 'SP', label: 'Salesperson', icon: Briefcase },
+  { id: 'AD', label: 'Admin', icon: FileCheck },
+];
 
 function App() {
-  const [openPhases, setOpenPhases] = useState<Record<string, boolean>>({ "PHASE_1": true });
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [currentView, setCurrentView] = useState<ViewType>('EMP');
 
-  const togglePhase = (id: string) => {
-    setOpenPhases(prev => ({ ...prev, [id]: !prev[id] }));
-  };
-
-  const expandAll = () => {
-    const all: Record<string, boolean> = {};
-    WORKFLOW_PHASES.forEach(p => all[p.id] = true);
-    setOpenPhases(all);
-  };
-
-  const collapseAll = () => {
-    setOpenPhases({});
+  const renderPage = () => {
+    switch (currentView) {
+      case 'EMP': return <EmployerPage />;
+      case 'CAN': return <CandidatePage />;
+      case 'SP': return <SalespersonPage />;
+      case 'AD': return <AdminPage />;
+      default: return <EmployerPage />;
+    }
   };
 
   return (
@@ -43,28 +50,28 @@ function App() {
             <h1 className="font-bold text-xl text-slate-800 tracking-tight">MingHwee<span className="text-blue-600">Flow</span></h1>
           </div>
 
-          <nav className="space-y-1">
-            {WORKFLOW_PHASES.map((phase) => (
-              <button
-                key={phase.id}
-                onClick={() => {
-                  togglePhase(phase.id);
-                  if (window.innerWidth < 768) setSidebarOpen(false);
-                  // Scroll to view
-                  const el = document.getElementById(phase.id);
-                  el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                  openPhases[phase.id] 
-                    ? 'bg-blue-50 text-blue-700' 
-                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                }`}
-              >
-                <span className={`w-2 h-2 rounded-full flex-shrink-0 bg-${phase.color}-500`} />
-                <span className="truncate text-left">{phase.title.split(':')[0]}</span>
-              </button>
-            ))}
-          </nav>
+          <div className="mb-8">
+            <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Workflow Selection</h4>
+            <div className="space-y-1">
+              {VIEWS.map((view) => (
+                <button
+                  key={view.id}
+                  onClick={() => {
+                    setCurrentView(view.id);
+                    if (window.innerWidth < 768) setSidebarOpen(false);
+                  }}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    currentView === view.id
+                      ? 'bg-blue-600 text-white shadow-md'
+                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                  }`}
+                >
+                  <view.icon className={`w-4 h-4 ${currentView === view.id ? 'text-blue-100' : 'text-slate-500'}`} />
+                  {view.label}
+                </button>
+              ))}
+            </div>
+          </div>
 
           <div className="mt-8 pt-8 border-t border-slate-100">
             <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">Legend</h4>
@@ -82,36 +89,7 @@ function App() {
       {/* Main Content */}
       <main className="flex-1 p-4 md:p-8 max-w-5xl mx-auto w-full">
         
-        <header className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
-          <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-slate-900">Process Workflow</h2>
-            <p className="text-slate-500 mt-2">Interactive visualization of the recruitment lifecycle.</p>
-          </div>
-          <div className="flex gap-2">
-            <button onClick={expandAll} className="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 shadow-sm">
-              Expand All
-            </button>
-            <button onClick={collapseAll} className="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 shadow-sm">
-              Collapse All
-            </button>
-          </div>
-        </header>
-
-        {/* Workflow Phases */}
-        <div className="space-y-6 relative">
-          {/* Vertical timeline line behind cards (desktop only visual) */}
-          <div className="hidden md:block absolute left-8 top-8 bottom-8 w-0.5 bg-slate-200 -z-10" />
-
-          {WORKFLOW_PHASES.map((phase) => (
-            <div key={phase.id} id={phase.id} className="scroll-mt-24">
-              <PhaseCard 
-                phase={phase} 
-                isOpen={!!openPhases[phase.id]} 
-                onToggle={() => togglePhase(phase.id)} 
-              />
-            </div>
-          ))}
-        </div>
+        {renderPage()}
 
         {/* Footer Stats / QA */}
         <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8">
