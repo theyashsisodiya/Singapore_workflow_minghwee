@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { MASTER_WORKFLOW_PHASES } from '../data/masterWorkflow';
+import { SALESPERSON_WORKFLOW_PHASES } from '../data/salespersonWorkflow';
 import { PhaseCard } from '../components/PhaseCard';
 import { Briefcase } from 'lucide-react';
 
 export const SalespersonPage = () => {
-  const [openPhases, setOpenPhases] = useState<Record<string, boolean>>({ "PHASE_1": true });
+  const [openPhases, setOpenPhases] = useState<Record<string, boolean>>({ "SP_PHASE_1": true });
 
   const togglePhase = (id: string) => {
     setOpenPhases(prev => ({ ...prev, [id]: !prev[id] }));
@@ -12,7 +12,7 @@ export const SalespersonPage = () => {
 
   const expandAll = () => {
     const all: Record<string, boolean> = {};
-    MASTER_WORKFLOW_PHASES.forEach(p => all[p.id] = true);
+    SALESPERSON_WORKFLOW_PHASES.forEach(p => all[p.id] = true);
     setOpenPhases(all);
   };
 
@@ -29,7 +29,7 @@ export const SalespersonPage = () => {
                  <Briefcase className="w-3 h-3"/> Salesperson View
                </span>
             </div>
-            <h2 className="text-2xl md:text-3xl font-bold text-slate-900">Sales Workflow</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-slate-900">Salesperson Dashboard</h2>
             <p className="text-slate-500 mt-2">
               Managing client relationships and matching process.
             </p>
@@ -43,7 +43,7 @@ export const SalespersonPage = () => {
       {/* Vertical timeline line */}
       <div className="hidden md:block absolute left-8 top-32 bottom-8 w-0.5 bg-slate-200 -z-10" />
 
-      {MASTER_WORKFLOW_PHASES.map((phase) => (
+      {SALESPERSON_WORKFLOW_PHASES.map((phase) => (
         <div key={phase.id} id={phase.id} className="scroll-mt-24">
           <PhaseCard 
             phase={phase} 

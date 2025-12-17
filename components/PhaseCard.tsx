@@ -40,9 +40,9 @@ export const PhaseCard: React.FC<PhaseCardProps> = ({ phase, isOpen, onToggle, c
   const [activeNationality, setActiveNationality] = useState("Myanmar");
 
   const filteredSteps = useMemo(() => {
-    // If we are in 'ALL' view, or specifically in 'CAN' or 'AD' view (which have their own custom workflow data),
+    // If we are in 'ALL' view, or specifically in 'CAN', 'AD', or 'SP' view (which have their own custom workflow data),
     // we do NOT want to filter steps out. The workflow is already designed end-to-end for these roles.
-    if (currentView === 'ALL' || currentView === 'CAN' || currentView === 'AD') return phase.steps;
+    if (currentView === 'ALL' || currentView === 'CAN' || currentView === 'AD' || currentView === 'SP') return phase.steps;
 
     return phase.steps.filter(step => {
       // Logic: Show step if any action involves the current actor
