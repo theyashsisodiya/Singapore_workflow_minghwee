@@ -47,7 +47,7 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
               "Step 2: Care Needs (Infant, Child, Elderly, Disabled, Pet) & Work Scope (Cooking cuisine, Cleaning).",
               "Step 3: Language & Skills (English/Mandarin, proficiency levels, special skills).",
               "Step 4: FDW Preferences (Nationality, Experience level, Age range).",
-              "Step 5: Status & Budget (Citizenship, Budget $500-$800, Off-days).",
+              "Step 5: Status & Hourly Rate (Citizenship, Hourly Rate $15-$25/hr, Off-days).",
               "Step 6: Review & Confirm requirements."
             ]
           },
