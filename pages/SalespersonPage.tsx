@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { SALESPERSON_WORKFLOW_PHASES } from '../data/salespersonWorkflow';
 import { PhaseCard } from '../components/PhaseCard';
-import { Briefcase } from 'lucide-react';
+import { Briefcase, List, GitMerge } from 'lucide-react';
+import { WorkflowDiagram } from '../components/WorkflowDiagram';
 
 export const SalespersonPage = () => {
   const [openPhases, setOpenPhases] = useState<Record<string, boolean>>({ "SP_PHASE_1": true });
+  const [viewMode, setViewMode] = useState<'list' | 'diagram'>('list');
 
   const togglePhase = (id: string) => {
     setOpenPhases(prev => ({ ...prev, [id]: !prev[id] }));
@@ -34,25 +36,48 @@ export const SalespersonPage = () => {
               Managing client relationships and matching process.
             </p>
         </div>
-        <div className="flex gap-2">
-          <button onClick={expandAll} className="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 shadow-sm">Expand All</button>
-          <button onClick={collapseAll} className="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 shadow-sm">Collapse All</button>
+        
+        <div className="flex items-center gap-3">
+          <div className="bg-white p-1 rounded-lg border border-slate-200 shadow-sm flex">
+             <button 
+               onClick={() => setViewMode('list')}
+               className={`px-3 py-1.5 rounded-md text-sm font-medium flex items-center gap-2 transition-colors ${viewMode === 'list' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:text-slate-700'}`}
+             >
+               <List className="w-4 h-4" /> List
+             </button>
+             <button 
+               onClick={() => setViewMode('diagram')}
+               className={`px-3 py-1.5 rounded-md text-sm font-medium flex items-center gap-2 transition-colors ${viewMode === 'diagram' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:text-slate-700'}`}
+             >
+               <GitMerge className="w-4 h-4" /> Flow Chart
+             </button>
+          </div>
+
+          {viewMode === 'list' && (
+            <div className="flex gap-2">
+              <button onClick={expandAll} className="px-3 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 shadow-sm">Expand</button>
+              <button onClick={collapseAll} className="px-3 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 shadow-sm">Collapse</button>
+            </div>
+          )}
         </div>
       </header>
 
-      {/* Vertical timeline line */}
-      <div className="hidden md:block absolute left-8 top-32 bottom-8 w-0.5 bg-slate-200 -z-10" />
+      {viewMode === 'list' && <div className="hidden md:block absolute left-8 top-32 bottom-8 w-0.5 bg-slate-200 -z-10" />}
 
-      {SALESPERSON_WORKFLOW_PHASES.map((phase) => (
-        <div key={phase.id} id={phase.id} className="scroll-mt-24">
-          <PhaseCard 
-            phase={phase} 
-            isOpen={!!openPhases[phase.id]} 
-            onToggle={() => togglePhase(phase.id)}
-            currentView="SP"
-          />
-        </div>
-      ))}
+      {viewMode === 'list' ? (
+        SALESPERSON_WORKFLOW_PHASES.map((phase) => (
+          <div key={phase.id} id={phase.id} className="scroll-mt-24">
+            <PhaseCard 
+              phase={phase} 
+              isOpen={!!openPhases[phase.id]} 
+              onToggle={() => togglePhase(phase.id)}
+              currentView="SP"
+            />
+          </div>
+        ))
+      ) : (
+        <WorkflowDiagram phases={SALESPERSON_WORKFLOW_PHASES} title="Salesperson Process Map" />
+      )}
     </div>
   );
 };
