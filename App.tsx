@@ -4,20 +4,24 @@ import { EmployerPage } from './pages/EmployerPage';
 import { CandidatePage } from './pages/CandidatePage';
 import { SalespersonPage } from './pages/SalespersonPage';
 import { AdminPage } from './pages/AdminPage';
-import { Activity, ShieldCheck, PieChart, Menu, X, Users, User, Briefcase, FileCheck } from 'lucide-react';
+import { ManagerPage } from './pages/ManagerPage';
+import { SuperAdminPage } from './pages/SuperAdminPage';
+import { Activity, ShieldCheck, PieChart, Menu, X, Users, User, Briefcase, FileCheck, LayoutDashboard, ShieldAlert } from 'lucide-react';
 import { ActorBadge } from './components/ActorBadge';
 import { ViewType } from './types';
 
-const VIEWS: { id: ViewType; label: string; icon: React.FC<any> }[] = [
+const VIEWS: { id: ViewType | 'MGR' | 'SA'; label: string; icon: React.FC<any> }[] = [
   { id: 'EMP', label: 'Employer', icon: User },
   { id: 'CAN', label: 'Candidate', icon: Users },
   { id: 'SP', label: 'Salesperson', icon: Briefcase },
   { id: 'AD', label: 'Admin', icon: FileCheck },
+  { id: 'MGR', label: 'Manager', icon: LayoutDashboard },
+  { id: 'SA', label: 'Super Admin', icon: ShieldAlert },
 ];
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [currentView, setCurrentView] = useState<ViewType>('EMP');
+  const [currentView, setCurrentView] = useState<ViewType | 'MGR' | 'SA'>('EMP');
 
   const renderPage = () => {
     switch (currentView) {
@@ -25,6 +29,8 @@ function App() {
       case 'CAN': return <CandidatePage />;
       case 'SP': return <SalespersonPage />;
       case 'AD': return <AdminPage />;
+      case 'MGR': return <ManagerPage />;
+      case 'SA': return <SuperAdminPage />;
       default: return <EmployerPage />;
     }
   };
@@ -57,7 +63,7 @@ function App() {
                 <button
                   key={view.id}
                   onClick={() => {
-                    setCurrentView(view.id);
+                    setCurrentView(view.id as any);
                     if (window.innerWidth < 768) setSidebarOpen(false);
                   }}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
@@ -79,8 +85,9 @@ function App() {
               <ActorBadge actor="EMP" className="text-[10px]" />
               <ActorBadge actor="SP" className="text-[10px]" />
               <ActorBadge actor="AD" className="text-[10px]" />
+              <ActorBadge actor="BM" className="text-[10px]" />
+              <ActorBadge actor="SA" className="text-[10px]" />
               <ActorBadge actor="SYS" className="text-[10px]" />
-              <ActorBadge actor="OA" className="text-[10px]" />
             </div>
           </div>
         </div>
@@ -140,7 +147,8 @@ function App() {
         </div>
         
         <footer className="mt-12 text-center text-slate-400 text-sm pb-8">
-          © 2024 MingHwee Recruitment Agency System. All rights reserved.
+          <p>© 2026 MingHwee Recruitment Agency System. All rights reserved.</p>
+          <p className="mt-1 font-medium text-slate-500">flow by Growwstacks - Yashraj singh sisodiya</p>
         </footer>
       </main>
     </div>

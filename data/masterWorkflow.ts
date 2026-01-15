@@ -15,10 +15,7 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
             actor: "EMP",
             description: [
               "Visits MingHwee website landing page.",
-              "Chooses Login Option:",
-              "- Option A: SingPass Login (Recommended, uses MyInfo).",
-              "- Option B: Email Registration with OTP.",
-              "- Option C: Mobile OTP Verification.",
+              "Chooses Login Option (SingPass, Email OTP, or Mobile OTP).",
               "Completes basic details: Name, Email, Mobile, NRIC/FIN, Address.",
               "Agrees to Terms & Conditions and Privacy Policy."
             ]
@@ -26,12 +23,11 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
           {
             actor: "SYS",
             description: [
-              "Verifies SingPass/OTP credentials.",
+              "Verifies credentials.",
               "Creates new user record in database.",
               "Logs acceptance of T&Cs.",
               "Sends Welcome Email to Employer."
-            ],
-            automationOpportunity: "SingPass MyInfo API, OTP services."
+            ]
           }
         ]
       },
@@ -42,49 +38,35 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
           {
             actor: "EMP",
             description: [
-              "Completes 3-5 min interactive questionnaire.",
-              "Step 1: Household Composition (Adults, Children w/ ages, Elderly, Dwelling type).",
-              "Step 2: Care Needs (Infant, Child, Elderly, Disabled, Pet) & Work Scope (Cooking cuisine, Cleaning).",
-              "Step 3: Language & Skills (English/Mandarin, proficiency levels, special skills).",
-              "Step 4: FDW Preferences (Nationality, Experience level, Age range).",
-              "Step 5: Status & Hourly Rate (Citizenship, Hourly Rate $15-$25/hr, Off-days).",
+              "Completes interactive questionnaire.",
+              "Step 1: Household Composition.",
+              "Step 2: Care Needs & Work Scope.",
+              "Step 3: Language & Skills.",
+              "Step 4: FDW Preferences (Nationality, Experience, Age).",
+              "Step 5: Status & Hourly Rate.",
               "Step 6: Review & Confirm requirements."
             ]
-          },
-          {
-            actor: "SYS",
-            description: [
-              "Presents multi-step questionnaire with progress indicator.",
-              "Applies conditional logic (e.g. show childcare questions only if needed).",
-              "Validates inputs and stores requirements."
-            ],
-            automationOpportunity: "Mobile-responsive design."
           }
         ]
       },
       {
         id: "1.3",
-        title: "AI Matching Initialization & Info Dashboard",
+        title: "AI Matching Initialization",
         actions: [
           {
             actor: "SYS",
             description: [
-              "Runs AI matching engine (Monatel) in background.",
+              "Runs AI matching engine in background.",
               "Generates match scores and shortlists candidates.",
-              "Grants Employer access to Informational Dashboard.",
-              "Dashboard includes: Process Overview, Cost Calculator, EOP Info, Legal Obligations.",
               "CRITICAL: Restricts access to candidate profiles until consultation."
-            ],
-            automationOpportunity: "Real-time AI scoring, Interactive dashboard."
+            ]
           },
           {
             actor: "EMP",
             description: [
-              "Accesses Informational Dashboard while waiting.",
-              "Reviews hiring timeline, cost breakdown, and FAQ.",
-              "Cannot yet see candidate profiles."
-            ],
-            critical: true
+              "Waits for Salesperson consultation to view matched profiles.",
+              "Reviews hiring timeline and FAQ in the general information section."
+            ]
           }
         ]
       },
@@ -96,14 +78,7 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
             actor: "SYS",
             description: [
               "Trigger: Requirements Saved.",
-              "Notifies Employer (next steps) and Salesperson (new lead assigned)."
-            ]
-          },
-          {
-            actor: "EMP",
-            description: [
-              "Books consultation slot via unified sales calendar.",
-              "OR waits for proactive contact from Salesperson."
+              "Notifies Employer of next steps and assigns a Salesperson."
             ]
           },
           {
@@ -111,14 +86,7 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
             description: [
               "Receives assignment notification.",
               "Reviews Employer requirements and AI shortlist.",
-              "Prepares by watching candidate video interviews."
-            ]
-          },
-          {
-            actor: "SYS",
-            description: [
-              "Trigger: Consultation Booked.",
-              "Sends confirmations, calendar invites, and 24h SMS reminders."
+              "Prepares by reviewing candidate profiles and video introductions."
             ]
           }
         ]
@@ -127,34 +95,41 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
   },
   {
     id: "PHASE_2",
-    title: "Phase 2: Candidate Matching, Selection & Payment",
-    description: "Sales consultation, interviewing, selection, and payment initiation.",
+    title: "Phase 2: Candidate Matching, Screening & Selection",
+    description: "Sales consultation, salesperson-led screening, and final selection.",
     color: "indigo",
     steps: [
       {
         id: "2.1",
-        title: "Sales Consultation & Interview Proceed Decision",
+        title: "Salesperson Consultation & Selection Decision",
         actions: [
           {
             actor: "SP",
             description: [
               "Conducts consultation (Phone/Video/In-person).",
-              "Reviews requirements and presents matched candidates via video.",
-              "Explains costs, timeline, and AI scores.",
+              "Presents matched candidates via video to the Employer.",
+              "Explains breakdown of costs, timeline, and AI matching scores.",
               "Asks CRITICAL QUESTION: 'Would you like to proceed with interviewing?'"
             ]
           },
           {
             actor: "EMP",
             description: [
-              "Decides: YES (Proceed to interview), MAYBE (Review profiles), or NO (Refine criteria)."
+              "Decision Point: YES (Proceed to interview), MAYBE (Review profiles/Requires screening), or NO (Refine criteria).",
+              "If YES: Confirms candidates to proceed directly to scheduling."
             ]
           },
           {
             actor: "SYS",
             description: [
-              "Trigger (if YES): Notifies Admin to coordinate interviews.",
-              "Trigger (if MAYBE): Grant profile access for 3 days."
+              "Trigger (if YES): Notifies Admin to coordinate live interviews for selected candidates."
+            ]
+          },
+          {
+            actor: "SP",
+            description: [
+              "Trigger (if MAYBE): Salesperson takes over the intensive screening of the candidate.",
+              "If candidate is selected after this screening: Proceeds to organize the interview."
             ]
           }
         ]
@@ -170,16 +145,8 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
           {
             actor: "EMP",
             description: [
-              "Browses profiles: Biodata, Certs, and HIREVue-style One-Way Videos.",
-              "Shortlists 2-4 candidates.",
-              "Clicks 'Request Live Interview'."
-            ]
-          },
-          {
-            actor: "SYS",
-            description: [
-              "Trigger: Interview Requested.",
-              "Notifies Salesperson and Overseas Agent."
+              "Browses profiles: Biodata, Certs, and One-Way Videos.",
+              "Shortlists candidates and requests live interview slots."
             ]
           },
           {
@@ -187,14 +154,6 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
             description: [
               "Coordinates with Overseas Agent for time slots.",
               "Schedules interview via platform calendar."
-            ]
-          },
-          {
-            actor: "SYS",
-            description: [
-              "Trigger: Interview Scheduled.",
-              "Sends video links (Zoom/Meet) to Employer and Candidate.",
-              "Sends reminders (24h, 1h)."
             ]
           }
         ]
@@ -206,104 +165,60 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
           {
             actor: "SYS",
             description: [
-              "Hosts video interview.",
-              "Features: Recording (with consent), Real-time translation, Note-taking."
+              "Hosts the secure video interview session."
             ]
           },
           {
             actor: "EMP",
             description: [
-              "Conducts interview (20-30 mins).",
-              "Provides feedback immediately: 'Proceed', 'Maybe', 'Not Interested'."
+              "Conducts live interview (20-30 mins).",
+              "Provides immediate feedback: 'Proceed', 'Maybe', or 'Not Interested'."
             ]
-          },
-          {
-            actor: "CAN",
-            description: ["Attends live interview via Overseas Agent facility."]
-          },
-          {
-            actor: "SP",
-            description: ["May moderate interview and ensure technical setup."]
           }
         ]
       },
       {
         id: "2.4",
-        title: "Candidate Confirmation & Payment Initiation",
+        title: "Candidate Confirmation & Payment Options",
         actions: [
-          {
-            actor: "SP",
-            description: [
-              "Confirms final selection with Employer.",
-              "Sends Payment Invoice with options."
-            ]
-          },
           {
             actor: "SYS",
             description: [
-              "Presents TWO Payment Options:",
-              "Option A: FULL PAYMENT (Recommended) - Activates hiring immediately.",
-              "Option B: BOOKING FEE ($XXX) - Reserves candidate for 7 days. Refundable if cancelled within 7 days. Forfeited if no-show.",
-              "Methods: PayNow (QR) or Credit Card. NO Bank Transfer."
+              "Presents THREE Payment Options:",
+              "Option 1: FULL PAYMENT - Activates hiring process immediately.",
+              "Option 2: PARTIAL PAYMENT - Total amount split into two installments.",
+              "Option 3: BOOKING FEE - Small amount (TBD) to reserve candidate for 7 days."
             ]
           },
           {
             actor: "EMP",
             description: [
-              "Selects payment method and pays.",
-              "Uploads proof if required."
+              "Selects preferred payment option and completes transaction via PayNow or Credit Card."
             ]
           },
           {
             actor: "AD",
             description: [
-              "MANUAL VERIFICATION of payment.",
-              "Matches transaction ID with bank record.",
-              "Approves payment to trigger workflow."
-            ],
-            critical: true
-          },
-          {
-            actor: "SYS",
-            description: [
-              "Trigger: Payment Approved.",
-              "Updates status to 'Hiring Process Activated' or 'Reserved'.",
-              "Starts Booking Fee 7-day timer if applicable."
+              "Performs manual verification of payment.",
+              "Approves transaction to trigger next workflow stage."
             ]
           }
         ]
       },
       {
         id: "2.5",
-        title: "Comprehensive Multi-Party Notifications",
+        title: "Multi-Party Notifications",
         actions: [
           {
             actor: "SYS",
             description: [
-              "Sends notifications to ALL parties.",
-              "Channels: In-App, Email, SMS, WhatsApp API."
-            ],
-            automationOpportunity: "Multi-channel notification engine."
-          },
-          {
-            actor: "EMP",
-            description: ["Receives Receipt, Service Agreement, SENSITIVE DOCUMENT REQUEST (IC, Income Tax), Timeline."]
+              "Sends notifications to Employer, Candidate, and Admin.",
+              "Sends document request (IC, Income Tax) to the Employer."
+            ]
           },
           {
             actor: "CAN",
-            description: ["Receives Selection Notification, Employer Background, Medical Check instructions."]
-          },
-          {
-            actor: "OA",
-            description: ["Receives Activation Notice, Document Checklist for Candidate."]
-          },
-          {
-            actor: "AD",
-            description: ["Receives NEW CASE ASSIGNMENT, Start Doc Collection tasks."]
-          },
-          {
-            actor: "BM",
-            description: ["Receives Daily Summary of new cases."]
+            description: ["Receives Selection Notification and Employer Background summary."]
           }
         ]
       }
@@ -322,42 +237,22 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
           {
             actor: "EMP",
             description: [
-              "Accesses secure upload link.",
               "Uploads PRIMARY DOCUMENTS: IC Copy, Income Tax Assessment/Declaration.",
-              "Foreigners: Passport, EP, Company Letter, Tenancy.",
-              "Additional: ID copies of household members (children/elderly)."
-            ]
-          },
-          {
-            actor: "SYS",
-            description: [
-              "Tracks document submission.",
-              "Secure vault storage.",
-              "Auto-reminders for missing docs."
+              "Foreigners: Passport, EP, Company Letter, Tenancy agreement."
             ]
           }
         ]
       },
       {
         id: "3.2",
-        title: "Document Verification (Reviewer)",
+        title: "Document Verification",
         actions: [
           {
             actor: "DR",
             description: [
-              "Manually verifies authenticity, clarity, and validity dates.",
+              "Verifies authenticity and clarity of uploaded documents.",
               "Marks documents as 'Approved' or 'Rejected'."
             ]
-          },
-          {
-            actor: "SP",
-            description: [
-              "If Rejected: Contacts Employer to explain and guide re-upload."
-            ]
-          },
-          {
-            actor: "SYS",
-            description: ["Updates dashboard status: Approved/Pending/Rejected."]
           }
         ]
       },
@@ -368,15 +263,8 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
           {
             actor: "OA",
             description: [
-              "Collects: Passport, Medical Report (Critical), Certificates, Bio-data.",
-              "Uploads to system."
-            ]
-          },
-          {
-            actor: "DR",
-            description: [
-              "Verifies Candidate documents.",
-              "Flags medical clearance issues immediately."
+              "Collects Passport, Medical Report, and Certificates.",
+              "Uploads candidate files to the platform."
             ]
           }
         ]
@@ -386,15 +274,10 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
         title: "E-Authorization (MOM Portal)",
         actions: [
           {
-            actor: "SP",
-            description: ["Sends MOM E-Authorization link and guide to Employer."]
-          },
-          {
             actor: "EMP",
             description: [
-              "Logs in to MOM portal.",
-              "Authorizes agency to act on their behalf.",
-              "Saves confirmation."
+              "Logs in to MOM portal to authorize the agency.",
+              "Saves confirmation of authorization."
             ]
           }
         ]
@@ -406,25 +289,13 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
           {
             actor: "AD",
             description: [
-              "Prepares all forms: Service Agreement, Fee Schedule, Job Offer, Giro Form.",
-              "Uploads to E-signature platform.",
-              "Sets signing sequence."
+              "Prepares Service Agreement, Fee Schedule, Job Offer, and Giro Form.",
+              "Uploads documents to the E-signature platform."
             ]
-          },
-          {
-            actor: "EMP",
-            description: ["Reviews and E-signs all documents."]
           },
           {
             actor: "CAN",
-            description: ["Reviews and E-signs documents via Agent."]
-          },
-          {
-            actor: "SYS",
-            description: [
-              "Stores signed docs.",
-              "Updates status to 'Contract Signed'."
-            ]
+            description: ["Reviews and E-signs documents via the local Agent facility."]
           }
         ]
       }
@@ -441,26 +312,10 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
         title: "Employer Orientation Programme (EOP)",
         actions: [
           {
-            actor: "SP",
-            description: [
-              "Checks if First-Time Hirer.",
-              "Registers Employer for EOP (eop.com.sg).",
-              "Sends registration link and deadline (before arrival)."
-            ]
-          },
-          {
             actor: "EMP",
             description: [
-              "Completes EOP registration.",
-              "Attends orientation (Online/In-person).",
-              "Uploads completion certificate."
-            ]
-          },
-          {
-            actor: "SYS",
-            description: [
-              "Tracks EOP status (Registered/Completed).",
-              "Flags as mandatory for work permit issuance."
+              "Completes EOP registration if a first-time hirer.",
+              "Attends orientation and uploads the completion certificate."
             ]
           }
         ]
@@ -479,24 +334,14 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
         actions: [
           {
             actor: "AD",
-            description: [
-              "Submits application to MOM eService using verified docs.",
-              "Updates progress tracker."
-            ]
-          },
-          {
-            actor: "SYS",
-            description: [
-              "Trigger: Submitted.",
-              "Notifies Employer with tracking reference and timeline (7-10 days)."
-            ]
+            description: ["Submits work permit application to MOM using verified documents."]
           }
         ]
       },
       {
         id: "5.X",
         title: "Nationality Specific Workflow",
-        description: "Select a nationality to view specific steps.",
+        description: "Branching logic for Myanmar, Indonesia, or Philippines.",
         actions: [], 
         subProcess: [
           {
@@ -506,9 +351,8 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
                 id: "5.2",
                 title: "Myanmar Process",
                 actions: [
-                  { actor: "AD", description: ["Receives IPA.", "Sends IPA for signatures (EMP & CAN).", "Uploads signed IPA to MOM (Critical).", "Purchases Insurance.", "Downloads Security Bond form.", "Emails form to Myanmar agent."] },
-                  { actor: "OA", description: ["Gets Candidate signature on IPA.", "Arranges immigration clearance.", "Confirms departure date."] },
-                  { actor: "SP", description: ["Coordinates handover logistics with Employer."] }
+                  { actor: "AD", description: ["Receives IPA.", "Purchases Insurance.", "Emails Security Bond to Myanmar agent."] },
+                  { actor: "OA", description: ["Gets Candidate signature on IPA.", "Confirms departure date."] }
                 ]
               }
             ]
@@ -520,8 +364,8 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
                 id: "5.3",
                 title: "Indonesia Process",
                 actions: [
-                  { actor: "DR", description: ["Creates Job Order (Indo Embassy portal).", "Generates Contract (3 copies).", "Arranges Runner (Tiju Ang) for embassy submission.", "Scans approved docs to Indo office."] },
-                  { actor: "AD", description: ["Receives IPA.", "Purchases Insurance/Bond.", "Notifies Transport (J3P Services).", "Verifies bond transmission."] }
+                  { actor: "DR", description: ["Creates Job Order in Indo Embassy portal.", "Scans approved docs to Indo office."] },
+                  { actor: "AD", description: ["Receives IPA.", "Purchases Insurance/Bond."] }
                 ]
               }
             ]
@@ -533,8 +377,7 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
                 id: "5.4",
                 title: "Philippines Process",
                 actions: [
-                  { actor: "AD", description: ["Prepares Embassy Forms (Original sigs required).", "Sends IPA to PH office for course appointments."] },
-                  { actor: "DR", description: ["Contacts Runner (Mr Ong) for embassy submission.", "Couriers originals to PH.", "Awaits OEC (Overseas Employment Certificate)."] },
+                  { actor: "AD", description: ["Prepares Embassy Forms.", "Sends IPA to PH office."] },
                   { actor: "OA", description: ["Processes OEC.", "Confirms flight details."] }
                 ]
               }
@@ -557,27 +400,14 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
           {
             actor: "AD",
             description: [
-              "Confirms flight details with OA.",
-              "Purchases Final Insurance/Bond.",
+              "Confirms flight details.",
               "Verifies bond transmission on MOM portal.",
-              "Schedules J3P Services (Pickup, Medical, SIP).",
-              "Emails J3P: IPA, Flight, Certs."
+              "Schedules transport and medical checkup services."
             ]
           },
           {
             actor: "SP",
-            description: [
-              "Final confirmation call with Employer.",
-              "Reminds about Placement Fee payment due on fetch day.",
-              "Sends handover checklist."
-            ]
-          },
-          {
-            actor: "SYS",
-            description: [
-              "Trigger: Flight Booked.",
-              "Sends Itinerary to Employer, Transport Co, Overseas Agent."
-            ]
+            description: ["Final confirmation call with Employer to review handover checklist."]
           }
         ]
       }
@@ -595,25 +425,11 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
         actions: [
           {
             actor: "TC",
-            description: [
-              "Picks up FDW from airport.",
-              "Transports to Medical Checkup & SIP Course.",
-              "Updates Admin on medical clearance."
-            ]
+            description: ["Picks up worker from airport.", "Transports to Medical Checkup & SIP Course."]
           },
           {
             actor: "AD",
-            description: [
-              "Prepares Handover Package (Contracts, SIP cert, Guides).",
-              "Double-confirms fetch date/time."
-            ]
-          },
-          {
-            actor: "SYS",
-            description: [
-              "Trigger: Medical Cleared -> Notify Employer.",
-              "Trigger: Fetch Day -24h -> Reminder SMS."
-            ]
+            description: ["Prepares Handover Package.", "Confirms fetch date/time with the Employer."]
           }
         ]
       },
@@ -622,27 +438,11 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
         title: "Handover Day & Final Signing",
         actions: [
           {
-            actor: "AD",
-            description: [
-              "Meets Employer & FDW.",
-              "Collects original contract from worker.",
-              "Briefs House Rules, Salary, Rest days, Safety.",
-              "Ensures final signatures on all docs."
-            ]
-          },
-          {
             actor: "EMP",
             description: [
               "Attends handover.",
-              "Makes final Placement Fee payment (PayNow/Cash/Cheque).",
-              "Signs final docs and takes FDW home."
-            ]
-          },
-          {
-            actor: "SYS",
-            description: [
-              "Status update: 'Handover Complete'.",
-              "Emails completion summary."
+              "Makes final Placement Fee payment.",
+              "Signs final documents and takes worker home."
             ]
           }
         ]
@@ -654,21 +454,8 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
           {
             actor: "AD",
             description: [
-              "Collects authorized recipient info (Up to 3 persons).",
-              "Schedules Thumbprint at MOM.",
-              "Inputs delivery address to MOM portal.",
-              "Tracks card delivery."
-            ]
-          },
-          {
-            actor: "DR",
-            description: ["May accompany FDW to MOM thumbprint appointment."]
-          },
-          {
-            actor: "SYS",
-            description: [
-              "Trigger: Card Delivered -> Notify Employer.",
-              "Trigger: Thumbprint Appt -> SMS Reminder 48h before."
+              "Schedules Thumbprint appointment at MOM.",
+              "Tracks Work Permit card delivery."
             ]
           }
         ]
@@ -683,21 +470,13 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
     steps: [
       {
         id: "8.1",
-        title: "Automated Follow-up Schedule",
+        title: "Follow-up Schedule",
         actions: [
-          {
-            actor: "SYS",
-            description: [
-              "Sends Automated Surveys: 1 week, 1 month, 3 months, 6 months.",
-              "Email/Phone check-in prompts to SP."
-            ]
-          },
           {
             actor: "SP",
             description: [
               "24h Call after handover.",
-              "1-week check-in, Monthly check-ins (first 3 months).",
-              "Mediates issues if they arise."
+              "Monthly check-ins for the first 3 months."
             ]
           }
         ]
@@ -709,30 +488,8 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
           {
             actor: "AD",
             description: [
-              "Work Permit renewals.",
-              "Levy payment assistance.",
-              "Contract extensions.",
-              "Replacement requests."
-            ]
-          },
-          {
-            actor: "SYS",
-            description: [
-              "Trigger: WP Expiring (60 & 30 days) -> Renewal Reminder with penalty warnings."
-            ]
-          }
-        ]
-      },
-      {
-        id: "8.3",
-        title: "Issue Resolution Protocol",
-        actions: [
-          {
-            actor: "SYS",
-            description: [
-              "Logs issues in CRM.",
-              "SLA: Urgent (2h), Non-urgent (24h).",
-              "Escalation Matrix: Salesperson -> Senior SP -> Manager -> Legal Team."
+              "Handles Work Permit renewals and contract extensions.",
+              "Assists with levy payment issues."
             ]
           }
         ]
