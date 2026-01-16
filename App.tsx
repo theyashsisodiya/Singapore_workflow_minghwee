@@ -6,7 +6,8 @@ import { SalespersonPage } from './pages/SalespersonPage';
 import { AdminPage } from './pages/AdminPage';
 import { ManagerPage } from './pages/ManagerPage';
 import { SuperAdminPage } from './pages/SuperAdminPage';
-import { Activity, ShieldCheck, PieChart, Menu, X, Users, User, Briefcase, FileCheck, LayoutDashboard, ShieldAlert } from 'lucide-react';
+import { NotificationPage } from './pages/NotificationPage';
+import { Activity, ShieldCheck, PieChart, Menu, X, Users, User, Briefcase, FileCheck, LayoutDashboard, ShieldAlert, Bell } from 'lucide-react';
 import { ActorBadge } from './components/ActorBadge';
 import { ViewType } from './types';
 
@@ -21,7 +22,7 @@ const VIEWS: { id: ViewType | 'MGR' | 'SA'; label: string; icon: React.FC<any> }
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [currentView, setCurrentView] = useState<ViewType | 'MGR' | 'SA'>('EMP');
+  const [currentView, setCurrentView] = useState<ViewType | 'MGR' | 'SA' | 'NOTIF'>('EMP');
 
   const renderPage = () => {
     switch (currentView) {
@@ -31,6 +32,7 @@ function App() {
       case 'AD': return <AdminPage />;
       case 'MGR': return <ManagerPage />;
       case 'SA': return <SuperAdminPage />;
+      case 'NOTIF': return <NotificationPage />;
       default: return <EmployerPage />;
     }
   };
@@ -76,6 +78,24 @@ function App() {
                   {view.label}
                 </button>
               ))}
+              
+              {/* Grey Line Separator for Notification System */}
+              <div className="h-px bg-slate-100 my-4"></div>
+              
+              <button
+                onClick={() => {
+                  setCurrentView('NOTIF');
+                  if (window.innerWidth < 768) setSidebarOpen(false);
+                }}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  currentView === 'NOTIF'
+                    ? 'bg-amber-600 text-white shadow-md'
+                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                }`}
+              >
+                <Bell className={`w-4 h-4 ${currentView === 'NOTIF' ? 'text-amber-100' : 'text-slate-500'}`} />
+                Notification System
+              </button>
             </div>
           </div>
 
