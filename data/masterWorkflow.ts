@@ -9,7 +9,7 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
     steps: [
       {
         id: "1.1",
-        title: "Employer Account Creation & Basic Data Collection",
+        title: "Employer Account Creation",
         actions: [
           {
             actor: "EMP",
@@ -33,6 +33,20 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
       },
       {
         id: "1.2",
+        title: "Round Robin Assignment",
+        actions: [
+          {
+            actor: "SYS",
+            description: [
+              "Auto-assigns the new employer profile to an active Salesperson.",
+              "Uses Round Robin logic to ensure fair workload distribution.",
+              "Triggers assignment notification to the designated staff."
+            ]
+          }
+        ]
+      },
+      {
+        id: "1.3",
         title: "Detailed Household Requirements Collection",
         actions: [
           {
@@ -50,43 +64,17 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
         ]
       },
       {
-        id: "1.3",
-        title: "AI Matching Initialization",
-        actions: [
-          {
-            actor: "SYS",
-            description: [
-              "Runs AI matching engine in background.",
-              "Generates match scores and shortlists candidates.",
-              "CRITICAL: Restricts access to candidate profiles until consultation."
-            ]
-          },
-          {
-            actor: "EMP",
-            description: [
-              "Waits for Salesperson consultation to view matched profiles.",
-              "Reviews hiring timeline and FAQ in the general information section."
-            ]
-          }
-        ]
-      },
-      {
         id: "1.4",
-        title: "Initial Contact & Sales Consultation Booking",
+        title: "AI Matching & System Processing",
         actions: [
           {
             actor: "SYS",
             description: [
-              "Trigger: Requirements Saved.",
-              "Notifies Employer of next steps and assigns a Salesperson."
-            ]
-          },
-          {
-            actor: "SP",
-            description: [
-              "Receives assignment notification.",
-              "Reviews Employer requirements and AI shortlist.",
-              "Prepares by reviewing candidate profiles and video introductions."
+              "Runs AI matching engine in background based on collected requirements.",
+              "Generates match scores and shortlists top candidates.",
+              "CRITICAL: Restricts access to candidate profiles until consultation.",
+              "Sends salesperson assignment confirmation to Employer.",
+              "Sends AI shortlist review notification to assigned Salesperson."
             ]
           }
         ]
@@ -95,12 +83,125 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
   },
   {
     id: "PHASE_2",
-    title: "Phase 2: Candidate Matching, Screening & Selection",
-    description: "Sales consultation, salesperson-led screening, and final selection.",
+    title: "Phase 2: Eligibility Criteria Validation",
+    description: "Multi-point validation of employer eligibility criteria.",
     color: "indigo",
     steps: [
       {
         id: "2.1",
+        title: "Valid ID Proof Validation",
+        actions: [
+          { actor: "SYS", description: ["Extract age from document", "Verify minimum age eligibility", "Mark status: Eligible/Not Eligible"] }
+        ]
+      },
+      {
+        id: "2.2",
+        title: "Non-Bankrupt Declaration",
+        actions: [
+          { actor: "EMP", description: ["Signs declaration form"] },
+          { actor: "SYS", description: ["Performs basic validation"] },
+          { actor: "SP", description: ["Manually reviews and approves status"] }
+        ]
+      },
+      {
+        id: "2.3",
+        title: "Mental Capacity Verification",
+        actions: [
+          { actor: "EMP", description: ["Uploads declaration form", "Uploads Medical Certificate"] },
+          { actor: "SYS", description: ["Initial document check"] },
+          { actor: "SP", description: ["Final approval of mental capacity status"] }
+        ]
+      },
+      {
+        id: "2.4",
+        title: "Minimum Monthly Income Check",
+        actions: [
+          { actor: "SYS", description: ["Fetches data from uploaded payslip", "Checks amount against mandatory criteria", "Mark: Pass or Flag for 6-month review"] }
+        ]
+      },
+      {
+        id: "2.5",
+        title: "Genuine Care Need Validation",
+        actions: [
+          { actor: "EMP", description: ["Uploads household composition form", "Uploads Birth Certificates", "Uploads age proof or Medical Certificate"] },
+          { actor: "SYS", description: ["Initial validation of care needs"] },
+          { actor: "SP", description: ["Final manual approval"] }
+        ]
+      },
+      {
+        id: "2.6",
+        title: "Suitable Accommodation Review",
+        actions: [
+          { actor: "EMP", description: ["Uploads photo of helper room", "Provides room dimensions"] },
+          { actor: "SYS", description: ["Image analysis for suitability"] },
+          { actor: "SP", description: ["Final manual review of accommodation"] }
+        ]
+      },
+      {
+        id: "2.7",
+        title: "First Time Employer EOP Check",
+        actions: [
+          { actor: "SYS", description: ["Checks EOP attendance via API", "If no API, flags for manual upload"] },
+          { actor: "EMP", description: ["Attends EOP program", "Submits EOP certificate"] },
+          { actor: "SP", description: ["Approves EOP status"] }
+        ]
+      }
+    ]
+  },
+  {
+    id: "PHASE_3",
+    title: "Phase 3: System Validation & Eligibility Check",
+    description: "Consolidation of all criteria for final eligibility determination.",
+    color: "purple",
+    steps: [
+      {
+        id: "3.1",
+        title: "Eligibility Logic Consolidation",
+        actions: [
+          { actor: "SYS", description: ["Consolidates all 7 criteria documents", "Performs logic check: Count Passed vs Failed", "Logic: ALL 7 PASS -> ELIGIBLE", "Logic: 5-6 PASS -> CONDITIONAL", "Logic: <=4 PASS -> NOT ELIGIBLE"] }
+        ]
+      }
+    ]
+  },
+  {
+    id: "PHASE_4",
+    title: "Phase 4: Eligibility Decision Paths",
+    description: "Routing based on eligibility status.",
+    color: "teal",
+    steps: [
+      {
+        id: "4.1",
+        title: "Path 1: Eligible",
+        actions: [
+          { actor: "SYS", description: ["Marks employer as ELIGIBLE", "Sends Welcome Confirmation Email to Employer", "Notifies Salesperson of approval with details"] }
+        ]
+      },
+      {
+        id: "4.2",
+        title: "Path 2: Conditional",
+        actions: [
+          { actor: "SYS", description: ["Marks status as CONDITIONAL", "Notifies Salesperson of missing/failed documents"] },
+          { actor: "SP", description: ["Contacts Employer to guide re-upload/fixing of documents"] }
+        ]
+      },
+      {
+        id: "4.3",
+        title: "Path 3: Not Eligible",
+        actions: [
+          { actor: "SYS", description: ["Marks status as NOT ELIGIBLE"] },
+          { actor: "SP", description: ["Assists employer in gathering missing/required documentation"] }
+        ]
+      }
+    ]
+  },
+  {
+    id: "PHASE_5",
+    title: "Phase 5: Candidate Matching, Screening & Selection",
+    description: "Sales consultation, salesperson-led screening, and final selection.",
+    color: "indigo",
+    steps: [
+      {
+        id: "5.1",
         title: "Salesperson Consultation & Selection Decision",
         actions: [
           {
@@ -118,24 +219,11 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
               "Decision Point: YES (Proceed to interview), MAYBE (Review profiles/Requires screening), or NO (Refine criteria).",
               "If YES: Confirms candidates to proceed directly to scheduling."
             ]
-          },
-          {
-            actor: "SYS",
-            description: [
-              "Trigger (if YES): Notifies Admin to coordinate live interviews for selected candidates."
-            ]
-          },
-          {
-            actor: "SP",
-            description: [
-              "Trigger (if MAYBE): Salesperson takes over the intensive screening of the candidate.",
-              "If candidate is selected after this screening: Proceeds to organize the interview."
-            ]
           }
         ]
       },
       {
-        id: "2.2",
+        id: "5.2",
         title: "Candidate Preview & Live Interview Scheduling",
         actions: [
           {
@@ -159,7 +247,7 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
         ]
       },
       {
-        id: "2.3",
+        id: "5.3",
         title: "Live Video Interview Process",
         actions: [
           {
@@ -172,22 +260,22 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
             actor: "EMP",
             description: [
               "Conducts live interview (20-30 mins).",
-              "Provides immediate feedback: 'Proceed', 'Maybe', or 'Not Interested'."
+              "Provides immediate feedback: 'APPROVE' or 'REJECT'."
             ]
           }
         ]
       },
       {
-        id: "2.4",
+        id: "5.4",
         title: "Candidate Confirmation & Payment Options",
         actions: [
           {
             actor: "SYS",
             description: [
-              "Presents THREE Payment Options:",
+              "Presents THREE Mandatory Payment Options:",
               "Option 1: FULL PAYMENT - Activates hiring process immediately.",
               "Option 2: PARTIAL PAYMENT - Total amount split into two installments.",
-              "Option 3: BOOKING FEE - Small amount (TBD) to reserve candidate for 7 days."
+              "Option 3: BOOKING FEE - Reserve candidate for 7 days."
             ]
           },
           {
@@ -206,32 +294,29 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
         ]
       },
       {
-        id: "2.5",
+        id: "5.5",
         title: "Multi-Party Notifications",
         actions: [
           {
             actor: "SYS",
             description: [
-              "Sends notifications to Employer, Candidate, and Admin.",
-              "Sends document request (IC, Income Tax) to the Employer."
+              "Sends confirmation and document requests to Employer.",
+              "Sends selection notification and employer background to Candidate.",
+              "Triggers process alert for Admin team."
             ]
-          },
-          {
-            actor: "CAN",
-            description: ["Receives Selection Notification and Employer Background summary."]
           }
         ]
       }
     ]
   },
   {
-    id: "PHASE_3",
-    title: "Phase 3: Documentation & Authorization",
+    id: "PHASE_6",
+    title: "Phase 6: Documentation & Authorization",
     description: "Document collection, verification, and MOM authorizations.",
     color: "purple",
     steps: [
       {
-        id: "3.1",
+        id: "6.1",
         title: "Employer Document Collection",
         actions: [
           {
@@ -244,7 +329,7 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
         ]
       },
       {
-        id: "3.2",
+        id: "6.2",
         title: "Document Verification",
         actions: [
           {
@@ -257,7 +342,7 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
         ]
       },
       {
-        id: "3.3",
+        id: "6.3",
         title: "Candidate Document Collection",
         actions: [
           {
@@ -270,7 +355,7 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
         ]
       },
       {
-        id: "3.4",
+        id: "6.4",
         title: "E-Authorization (MOM Portal)",
         actions: [
           {
@@ -281,55 +366,17 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
             ]
           }
         ]
-      },
-      {
-        id: "3.5",
-        title: "Form Preparation & E-Signing",
-        actions: [
-          {
-            actor: "AD",
-            description: [
-              "Prepares Service Agreement, Fee Schedule, Job Offer, and Giro Form.",
-              "Uploads documents to the E-signature platform."
-            ]
-          },
-          {
-            actor: "CAN",
-            description: ["Reviews and E-signs documents via the local Agent facility."]
-          }
-        ]
       }
     ]
   },
   {
-    id: "PHASE_4",
-    title: "Phase 4: Payment Processing & EOP",
-    description: "Financial settlement and Employer Orientation Programme.",
-    color: "teal",
-    steps: [
-      {
-        id: "4.1",
-        title: "Employer Orientation Programme (EOP)",
-        actions: [
-          {
-            actor: "EMP",
-            description: [
-              "Completes EOP registration if a first-time hirer.",
-              "Attends orientation and uploads the completion certificate."
-            ]
-          }
-        ]
-      }
-    ]
-  },
-  {
-    id: "PHASE_5",
-    title: "Phase 5: Country-Specific Application & MOM",
+    id: "PHASE_7",
+    title: "Phase 7: Country-Specific Application & MOM",
     description: "MOM application and country-specific processing.",
     color: "orange",
     steps: [
       {
-        id: "5.1",
+        id: "7.1",
         title: "General MOM Application Submission",
         actions: [
           {
@@ -339,7 +386,7 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
         ]
       },
       {
-        id: "5.X",
+        id: "7.X",
         title: "Nationality Specific Workflow",
         description: "Branching logic for Myanmar, Indonesia, or Philippines.",
         actions: [], 
@@ -348,7 +395,7 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
             title: "Myanmar",
             steps: [
               {
-                id: "5.2",
+                id: "7.2",
                 title: "Myanmar Process",
                 actions: [
                   { actor: "AD", description: ["Receives IPA.", "Purchases Insurance.", "Emails Security Bond to Myanmar agent."] },
@@ -361,7 +408,7 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
             title: "Indonesia",
             steps: [
               {
-                id: "5.3",
+                id: "7.3",
                 title: "Indonesia Process",
                 actions: [
                   { actor: "DR", description: ["Creates Job Order in Indo Embassy portal.", "Scans approved docs to Indo office."] },
@@ -374,7 +421,7 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
             title: "Philippines",
             steps: [
               {
-                id: "5.4",
+                id: "7.4",
                 title: "Philippines Process",
                 actions: [
                   { actor: "AD", description: ["Prepares Embassy Forms.", "Sends IPA to PH office."] },
@@ -388,13 +435,13 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
     ]
   },
   {
-    id: "PHASE_6",
-    title: "Phase 6: Pre-Arrival Coordination",
+    id: "PHASE_8",
+    title: "Phase 8: Pre-Arrival Coordination",
     description: "Travel coordination and insurance.",
     color: "cyan",
     steps: [
       {
-        id: "6.1",
+        id: "8.1",
         title: "Arrival Logistics & Final Checks",
         actions: [
           {
@@ -404,23 +451,19 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
               "Verifies bond transmission on MOM portal.",
               "Schedules transport and medical checkup services."
             ]
-          },
-          {
-            actor: "SP",
-            description: ["Final confirmation call with Employer to review handover checklist."]
           }
         ]
       }
     ]
   },
   {
-    id: "PHASE_7",
-    title: "Phase 7: Post-Arrival & Handover",
+    id: "PHASE_9",
+    title: "Phase 9: Post-Arrival & Handover",
     description: "Arrival, medical, handover, and Work Permit issuance.",
     color: "emerald",
     steps: [
       {
-        id: "7.1",
+        id: "9.1",
         title: "Medical Clearance & Handover Prep",
         actions: [
           {
@@ -434,7 +477,7 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
         ]
       },
       {
-        id: "7.2",
+        id: "9.2",
         title: "Handover Day & Final Signing",
         actions: [
           {
@@ -446,30 +489,17 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
             ]
           }
         ]
-      },
-      {
-        id: "7.3",
-        title: "Work Permit Card Processing",
-        actions: [
-          {
-            actor: "AD",
-            description: [
-              "Schedules Thumbprint appointment at MOM.",
-              "Tracks Work Permit card delivery."
-            ]
-          }
-        ]
       }
     ]
   },
   {
-    id: "PHASE_8",
-    title: "Phase 8: Post-Placement Support",
+    id: "PHASE_10",
+    title: "Phase 10: Post-Placement Support",
     description: "Follow-ups, support, and issue resolution.",
     color: "rose",
     steps: [
       {
-        id: "8.1",
+        id: "10.1",
         title: "Follow-up Schedule",
         actions: [
           {
@@ -477,19 +507,6 @@ export const MASTER_WORKFLOW_PHASES: WorkflowPhase[] = [
             description: [
               "24h Call after handover.",
               "Monthly check-ins for the first 3 months."
-            ]
-          }
-        ]
-      },
-      {
-        id: "8.2",
-        title: "Ongoing Admin Support",
-        actions: [
-          {
-            actor: "AD",
-            description: [
-              "Handles Work Permit renewals and contract extensions.",
-              "Assists with levy payment issues."
             ]
           }
         ]
